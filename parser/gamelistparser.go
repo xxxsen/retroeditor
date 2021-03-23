@@ -98,7 +98,16 @@ func (g *GameListParser) Save() error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(g.file, data, 0744)
+	file, err := os.OpenFile(g.file, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0744)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	_, err = file.WriteString(xml.Header)
+	if err != nil {
+		return err
+	}
+	_, err = file.Write(data)
 	if err != nil {
 		return err
 	}
