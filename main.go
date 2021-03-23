@@ -8,7 +8,7 @@ import (
 	"github.com/therecipe/qt/widgets"
 )
 
-var root = flag.String("root", "./", "roms root path")
+var root = flag.String("root", "/home/sen/tmp/roms", "roms root path")
 
 func main() {
 	flag.Parse()

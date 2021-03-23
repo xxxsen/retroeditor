@@ -46,8 +46,6 @@ func (r *RetroUI) btnCallback(btn *widgets.QPushButton) func(ch bool) {
 	return func(bool) {
 		gamedir := r.dirmgr.GetBase() + string(filepath.Separator) + btn.Text()
 		gameui := NewGameListUI(r, gamedir)
-		FatalMessage("r u ok??")
-		//gameui.SetWindowModality(core.Qt__WindowModal)
 		gameui.Show()
 	}
 }
