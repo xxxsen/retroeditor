@@ -1,6 +1,11 @@
 package ui
 
-import "github.com/therecipe/qt/widgets"
+import (
+	"fmt"
+	"path/filepath"
+
+	"github.com/therecipe/qt/widgets"
+)
 
 type GameListUI struct {
 	*widgets.QMainWindow
@@ -16,7 +21,7 @@ func NewGameListUI(rui *RetroUI, gameloc string) *GameListUI {
 
 func (u *GameListUI) init() {
 	u.QMainWindow = widgets.NewQMainWindow(u.rui, 0)
-	u.SetWindowTitle("RetroEditor")
+	u.SetWindowTitle(fmt.Sprintf("GameListEditor - %s", filepath.Base(u.gameloc)))
 
 	var centralWidget = widgets.NewQWidget(u, 0)
 	var layout = widgets.NewQGridLayout2()
