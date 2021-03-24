@@ -222,6 +222,10 @@ func (u *GameListUI) buildPreviewInfo(grid *widgets.QGridLayout) {
 	grid.AddWidget2(u.picImage, 0, 1, 0)
 	grid.AddWidget2(u.picMarquee, 1, 1, 0)
 	grid.AddWidget2(u.vVideo, 2, 1, 0)
+
+	//增加选框支持
+	u.picImage.ConnectMousePressEvent(u.onImageClick)
+	u.picMarquee.ConnectMousePressEvent(u.onMarqueeClick)
 }
 
 func (u *GameListUI) onDataNotify(m *parser.GameListItem) {
@@ -238,25 +242,37 @@ func (u *GameListUI) onDataNotify(m *parser.GameListItem) {
 	u.leGenre.SetText(m.Genre)
 	u.lePlayer.SetText(m.Players)
 	u.leDesc.SetText(m.Desc)
-	if len(m.Image) != 0 {
-		qp := gui.NewQPixmap3(fs.MergePath(u.gameloc, m.Image), "", 0)
-		qp = qp.Scaled2(200, 200, core.Qt__KeepAspectRatio, core.Qt__FastTransformation)
-		u.picImage.SetPixmap(qp)
-	}
-	u.picImage.SetToolTip(m.Image)
-	if len(m.Marquee) != 0 {
-		qp := gui.NewQPixmap3(fs.MergePath(u.gameloc, m.Marquee), "", 0)
-		qp = qp.Scaled2(200, 200, core.Qt__KeepAspectRatio, core.Qt__FastTransformation)
-		u.picMarquee.SetBaseSize2(100, 100)
-		u.picMarquee.SetPixmap(qp)
-	}
-	u.picMarquee.SetToolTip(m.Marquee)
+	u.loadImage(m.Image)
+	u.loadMarquee(m.Marquee)
+	u.loadVideo(m.Video)
+}
+
+func (u *GameListUI) loadVideo(video string) {
 	//TODO:add video support
 	// if len(m.Video) != 0 {
 	// 	player := multimedia.NewQMediaPlayer(nil, 0)
 	// 	player.SetMedia(multimedia.NewQMediaContent2(core.QUrl_FromLocalFile(m.Video)), nil)
 	// 	player.Play()
 	// }
+}
+
+func (u *GameListUI) loadImage(img string) {
+	u.picImage.SetToolTip(img)
+	if len(img) != 0 {
+		qp := gui.NewQPixmap3(fs.MergePath(u.gameloc, img), "", 0)
+		qp = qp.Scaled2(200, 200, core.Qt__KeepAspectRatio, core.Qt__FastTransformation)
+		u.picImage.SetPixmap(qp)
+	}
+}
+
+func (u *GameListUI) loadMarquee(img string) {
+	u.picMarquee.SetToolTip(img)
+	if len(img) != 0 {
+		qp := gui.NewQPixmap3(fs.MergePath(u.gameloc, img), "", 0)
+		qp = qp.Scaled2(200, 200, core.Qt__KeepAspectRatio, core.Qt__FastTransformation)
+		u.picMarquee.SetBaseSize2(100, 100)
+		u.picMarquee.SetPixmap(qp)
+	}
 }
 
 func (u *GameListUI) onListItemSelect() {
@@ -391,7 +407,8 @@ func (u *GameListUI) onWriteToFile() {
 }
 
 func (u *GameListUI) onPathClick(*gui.QMouseEvent) {
-	file := widgets.QFileDialog_GetOpenFileName(nil, "选择游戏文件:", u.gameloc, "*.*", "*.*", widgets.QFileDialog__ReadOnly)
+	file := widgets.QFileDialog_GetOpenFileName(nil, "选择游戏文件:",
+		u.gameloc, "*.*", "*.*", widgets.QFileDialog__ReadOnly)
 	if len(file) == 0 {
 		return
 	}
@@ -402,5 +419,37 @@ func (u *GameListUI) onPathClick(*gui.QMouseEvent) {
 	}
 	sub := "./" + fs.TrimPath(u.gameloc, file)
 	u.lePath.SetText(sub)
+	u.onModify("")
+}
+
+func (u *GameListUI) onImageClick(*gui.QMouseEvent) {
+	file := widgets.QFileDialog_GetOpenFileName(nil, "选择封面文件:",
+		u.gameloc, "*.jpg *.png *.jpeg  *.gif", "*.*", widgets.QFileDialog__ReadOnly)
+	if len(file) == 0 {
+		return
+	}
+	ok := fs.IsParentDir(u.gameloc, file)
+	if !ok {
+		NoticeMessagef("图片:%s 不存在roms目录中, 请手动复制进去。", file)
+		return
+	}
+	sub := "./" + fs.TrimPath(u.gameloc, file)
+	u.loadImage(sub)
+	u.onModify("")
+}
+
+func (u *GameListUI) onMarqueeClick(*gui.QMouseEvent) {
+	file := widgets.QFileDialog_GetOpenFileName(nil, "选择封面文件:",
+		u.gameloc, "*.jpg *.png *.jpeg  *.gif", "*.*", widgets.QFileDialog__ReadOnly)
+	if len(file) == 0 {
+		return
+	}
+	ok := fs.IsParentDir(u.gameloc, file)
+	if !ok {
+		NoticeMessagef("图片:%s 不存在roms目录中, 请手动复制进去。", file)
+		return
+	}
+	sub := "./" + fs.TrimPath(u.gameloc, file)
+	u.loadMarquee(sub)
 	u.onModify("")
 }
