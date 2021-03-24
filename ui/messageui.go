@@ -14,3 +14,9 @@ func FatalMessage(errmsg string) {
 	box.Show()
 	//TODO:should exit program...
 }
+
+func NoticeMessage(msg string) {
+	box := widgets.NewQMessageBox(nil)
+	box.SetText(msg)
+	box.Show()
+}

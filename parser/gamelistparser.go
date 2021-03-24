@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"io/ioutil"
 	"os"
+	"sort"
 )
 
 //GameListItem 数据项
@@ -68,6 +69,16 @@ func (g *GameListParser) Parse() error {
 //GetAll 读取整个map
 func (g *GameListParser) GetAll() map[string]*GameListItem {
 	return g.store
+}
+
+//GetList 获取列表, 方便有序输出
+func (g *GameListParser) GetList() []string {
+	var lst []string
+	for _, item := range g.gl.Games {
+		lst = append(lst, item.Name)
+	}
+	sort.Strings(lst)
+	return lst
 }
 
 //Get 获取对应项

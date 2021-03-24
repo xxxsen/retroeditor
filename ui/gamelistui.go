@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"retroeditor/parser"
 
+	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/widgets"
 )
@@ -71,8 +72,8 @@ func (u *GameListUI) init() {
 		FatalError(err)
 	}
 	lst := widgets.NewQListWidget(nil)
-
-	for name := range u.glp.GetAll() {
+	lst.ConnectItemSelectionChanged(u.onListItemSelect(lst))
+	for _, name := range u.glp.GetList() {
 		lst.AddItem(name)
 	}
 	//添加游戏展示list
@@ -92,6 +93,8 @@ func (u *GameListUI) init() {
 	u.buildBasicInfo(layoutBasicInfo)
 	//生成预览框
 	u.buildPreviewInfo(layoutView)
+	//触发数据更新
+	lst.SetCurrentIndex(core.NewQModelIndex())
 }
 
 func (u *GameListUI) buildBasicInfo(grid *widgets.QGridLayout) {
@@ -144,41 +147,43 @@ func (u *GameListUI) buildPreviewInfo(grid *widgets.QGridLayout) {
 	grid.AddWidget2(u.vVideo, 2, 1, 0)
 }
 
-func (u *GameListUI) safeGet(m map[string]string, key string) string {
-	if v, ok := m[key]; ok {
-		return v
-	}
-	return ""
-}
-
-func (u *GameListUI) OnDataNotify(m map[string]string) {
-	u.leName.SetText(u.safeGet(m, "Name"))
-	u.lePath.SetText(u.safeGet(m, "Path"))
-	u.lePlayCnt.SetText(u.safeGet(m, "PlayCount"))
-	u.leLastPlay.SetText(u.safeGet(m, "LastPlayed"))
-	u.leLang.SetText(u.safeGet(m, "Lang"))
-	u.leRate.SetText(u.safeGet(m, "Rating"))
-	u.leReleaseDate.SetText(u.safeGet(m, "ReleaseDate"))
-	u.leDev.SetText(u.safeGet(m, "Developer"))
-	u.lePub.SetText(u.safeGet(m, "Publisher"))
-	u.leGenre.SetText(u.safeGet(m, "Genre"))
-	u.lePlayer.SetText(u.safeGet(m, "Players"))
-	u.leDesc.SetText(u.safeGet(m, "Desc"))
-	img := u.safeGet(m, "Image")
-	if len(img) != 0 {
-		qp := gui.NewQPixmap3(img, "", 0)
+func (u *GameListUI) onDataNotify(m *parser.GameListItem) {
+	u.leName.SetText(m.Name)
+	u.lePath.SetText(m.Path)
+	u.lePlayCnt.SetText(m.PlayCount)
+	u.leLastPlay.SetText(m.LastPlayed)
+	u.leLang.SetText(m.Lang)
+	u.leRate.SetText(m.Rating)
+	u.leReleaseDate.SetText(m.ReleaseDate)
+	u.leDev.SetText(m.Developer)
+	u.lePub.SetText(m.Publisher)
+	u.leGenre.SetText(m.Genre)
+	u.lePlayer.SetText(m.Players)
+	u.leDesc.SetText(m.Desc)
+	if len(m.Image) != 0 {
+		qp := gui.NewQPixmap3(m.Image, "", 0)
 		u.picImage.SetPixmap(qp)
 	}
-	marquee := u.safeGet(m, "Marquee")
-	if len(marquee) != 0 {
-		qp := gui.NewQPixmap3(marquee, "", 0)
+	if len(m.Marquee) != 0 {
+		qp := gui.NewQPixmap3(m.Marquee, "", 0)
 		u.picMarquee.SetPixmap(qp)
 	}
 	//TODO:add video support
-	// video := u.safeGet(m, "Video")
-	// if len(video) != 0 {
+	// if len(m.Video) != 0 {
 	// 	player := multimedia.NewQMediaPlayer(nil, 0)
-	// 	player.SetMedia(multimedia.NewQMediaContent2(core.QUrl_FromLocalFile(video)), nil)
+	// 	player.SetMedia(multimedia.NewQMediaContent2(core.QUrl_FromLocalFile(m.Video)), nil)
 	// 	player.Play()
 	// }
+}
+
+func (u *GameListUI) onListItemSelect(lst *widgets.QListWidget) func() {
+	return func() {
+		name := lst.CurrentItem().Text()
+		item, found := u.glp.Get(name)
+		if !found {
+			NoticeMessage(fmt.Sprintf("Not found game:%s", name))
+			return
+		}
+		u.onDataNotify(item)
+	}
 }
