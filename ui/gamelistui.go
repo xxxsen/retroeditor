@@ -226,6 +226,10 @@ func (u *GameListUI) buildPreviewInfo(grid *widgets.QGridLayout) {
 	//增加选框支持
 	u.picImage.ConnectMousePressEvent(u.onImageClick)
 	u.picMarquee.ConnectMousePressEvent(u.onMarqueeClick)
+
+	//设置边框
+	u.picImage.SetFrameShape(widgets.QFrame__Box)
+	u.picMarquee.SetFrameShape(widgets.QFrame__Box)
 }
 
 func (u *GameListUI) onDataNotify(m *parser.GameListItem) {
