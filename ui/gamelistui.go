@@ -32,6 +32,16 @@ type GameListUI struct {
 	leGenre       *widgets.QLineEdit
 	lePlayer      *widgets.QLineEdit
 	picMarquee    *widgets.QLabel
+
+	//按钮
+	btnDelete    *widgets.QPushButton
+	btnAdd       *widgets.QPushButton
+	btnSave      *widgets.QPushButton
+	btnDiscard   *widgets.QPushButton
+	btnWriteFile *widgets.QPushButton
+
+	//list
+	lstGame *widgets.QListWidget
 }
 
 func NewGameListUI(rui *RetroUI, gameloc string) *GameListUI {
@@ -63,21 +73,30 @@ func (u *GameListUI) init() {
 	u.QMainWindow = widgets.NewQMainWindow(u.rui, 0)
 	u.SetWindowTitle(fmt.Sprintf("GameListEditor - %s", filepath.Base(u.gameloc)))
 	var centralWidget = widgets.NewQWidget(u, 0)
-	var layout = widgets.NewQGridLayout2()
-	centralWidget.SetLayout(layout)
+
+	//基础布局
+	basicLayout := widgets.NewQGridLayout2()
+	centralWidget.SetLayout(basicLayout)
 	u.SetCentralWidget(centralWidget)
 
 	err := u.glp.Parse()
 	if err != nil {
 		FatalError(err)
 	}
-	lst := widgets.NewQListWidget(nil)
-	lst.ConnectItemSelectionChanged(u.onListItemSelect(lst))
-	for _, name := range u.glp.GetList() {
-		lst.AddItem(name)
-	}
+	u.lstGame = widgets.NewQListWidget(nil)
+	u.lstGame.ConnectItemSelectionChanged(u.onListItemSelect)
+
+	//控制按钮布局
+	controlLayout := widgets.NewQGridLayout2()
+	u.buildControl(controlLayout)
+	//展示布局
+	layout := widgets.NewQGridLayout2()
+
+	basicLayout.AddLayout(layout, 0, 0, 0)
+	basicLayout.AddLayout(controlLayout, 1, 0, 0)
+
 	//添加游戏展示list
-	layout.AddWidget2(lst, 0, 0, 0)
+	layout.AddWidget2(u.lstGame, 0, 0, 0)
 
 	//添加右边的布局
 	var layoutRight = widgets.NewQGridLayout2()
@@ -93,8 +112,9 @@ func (u *GameListUI) init() {
 	u.buildBasicInfo(layoutBasicInfo)
 	//生成预览框
 	u.buildPreviewInfo(layoutView)
-	//触发数据更新
-	lst.SetCurrentIndex(core.NewQModelIndex())
+
+	//构建list
+	u.buildList()
 }
 
 func (u *GameListUI) buildBasicInfo(grid *widgets.QGridLayout) {
@@ -130,6 +150,48 @@ func (u *GameListUI) buildBasicInfo(grid *widgets.QGridLayout) {
 	grid.AddWidget2(u.leGenre, 9, 1, 0)
 	grid.AddWidget2(u.lePlayer, 10, 1, 0)
 	grid.AddWidget2(u.leDesc, 11, 1, 0)
+
+	//设置编辑回调
+	u.leName.ConnectTextEdited(u.onModify)
+	u.lePath.ConnectTextEdited(u.onModify)
+	u.lePlayCnt.ConnectTextEdited(u.onModify)
+	u.leLastPlay.ConnectTextEdited(u.onModify)
+	u.leLang.ConnectTextEdited(u.onModify)
+	u.leRate.ConnectTextEdited(u.onModify)
+	u.leReleaseDate.ConnectTextEdited(u.onModify)
+	u.leDev.ConnectTextEdited(u.onModify)
+	u.lePub.ConnectTextEdited(u.onModify)
+	u.leGenre.ConnectTextEdited(u.onModify)
+	u.lePlayer.ConnectTextEdited(u.onModify)
+	u.leDesc.ConnectTextChanged(func() { u.onModify("") })
+}
+
+func (u *GameListUI) buildControl(grid *widgets.QGridLayout) {
+	u.btnDelete = widgets.NewQPushButton2("删除游戏(&D)", nil)
+	u.btnAdd = widgets.NewQPushButton2("添加游戏(&N)", nil)
+	u.btnSave = widgets.NewQPushButton2("保存修改(&S)", nil)
+	u.btnDiscard = widgets.NewQPushButton2("还原修改(&C)", nil)
+	u.btnWriteFile = widgets.NewQPushButton2("写入文件(&W)", nil)
+
+	//初始不能修改
+	u.btnSave.SetEnabled(false)
+	u.btnDiscard.SetEnabled(false)
+	u.btnDelete.SetEnabled(false)
+	u.btnWriteFile.SetEnabled(false)
+
+	//添加到布局里面
+	grid.AddWidget2(u.btnDelete, 0, 0, 0)
+	grid.AddWidget2(u.btnAdd, 0, 1, 0)
+	grid.AddWidget2(u.btnSave, 0, 2, 0)
+	grid.AddWidget2(u.btnDiscard, 0, 3, 0)
+	grid.AddWidget2(u.btnWriteFile, 0, 4, 0)
+
+	//设置回调
+	u.btnSave.ConnectClicked(func(bool) { u.onDataSave() })
+	u.btnDiscard.ConnectClicked(func(bool) { u.onDataDiscard() })
+	u.btnAdd.ConnectClicked(func(bool) { u.onDataCreate() })
+	u.btnDelete.ConnectClicked(func(bool) { u.onDataDelete() })
+	u.btnWriteFile.ConnectClicked(func(bool) { u.onWriteToFile() })
 }
 
 func (u *GameListUI) buildPreviewInfo(grid *widgets.QGridLayout) {
@@ -148,6 +210,7 @@ func (u *GameListUI) buildPreviewInfo(grid *widgets.QGridLayout) {
 }
 
 func (u *GameListUI) onDataNotify(m *parser.GameListItem) {
+	u.leName.SetEnabled(false)
 	u.leName.SetText(m.Name)
 	u.lePath.SetText(m.Path)
 	u.lePlayCnt.SetText(m.PlayCount)
@@ -164,10 +227,12 @@ func (u *GameListUI) onDataNotify(m *parser.GameListItem) {
 		qp := gui.NewQPixmap3(m.Image, "", 0)
 		u.picImage.SetPixmap(qp)
 	}
+	u.picImage.SetToolTip(m.Image)
 	if len(m.Marquee) != 0 {
 		qp := gui.NewQPixmap3(m.Marquee, "", 0)
 		u.picMarquee.SetPixmap(qp)
 	}
+	u.picMarquee.SetToolTip(m.Marquee)
 	//TODO:add video support
 	// if len(m.Video) != 0 {
 	// 	player := multimedia.NewQMediaPlayer(nil, 0)
@@ -176,14 +241,133 @@ func (u *GameListUI) onDataNotify(m *parser.GameListItem) {
 	// }
 }
 
-func (u *GameListUI) onListItemSelect(lst *widgets.QListWidget) func() {
-	return func() {
-		name := lst.CurrentItem().Text()
-		item, found := u.glp.Get(name)
-		if !found {
-			NoticeMessage(fmt.Sprintf("Not found game:%s", name))
-			return
+func (u *GameListUI) onListItemSelect() {
+
+	name := u.lstGame.CurrentItem().Text()
+	item, found := u.glp.Get(name)
+	if !found {
+		NoticeMessagef("未找到游戏:%s", name)
+		return
+	}
+	u.onDataNotify(item)
+	u.btnSave.SetEnabled(false)
+	u.btnDiscard.SetEnabled(false)
+	u.btnDelete.SetEnabled(true)
+
+}
+
+func (u *GameListUI) onModify(string) {
+	u.btnSave.SetEnabled(true)
+	u.btnDiscard.SetEnabled(true)
+}
+
+func (u *GameListUI) onDataSave() {
+	//
+	item, found := u.glp.Get(u.leName.Text())
+	if !found {
+		item = &parser.GameListItem{}
+	}
+	item.Name = u.leName.Text()
+	item.Path = u.lePath.Text()
+	item.PlayCount = u.lePlayCnt.Text()
+	item.LastPlayed = u.leLastPlay.Text()
+	item.Lang = u.leLang.Text()
+	item.Desc = u.leDesc.ToPlainText()
+	item.Rating = u.leRate.Text()
+	item.ReleaseDate = u.leReleaseDate.Text()
+	item.Developer = u.leDev.Text()
+	item.Publisher = u.lePub.Text()
+	item.Genre = u.leGenre.Text()
+	item.Players = u.lePlayer.Text()
+	//TODO:
+	item.Image = u.picImage.ToolTip()
+	item.Marquee = u.picMarquee.ToolTip()
+	item.Video = u.vVideo.ToolTip()
+
+	//
+	u.glp.Set(item)
+
+	//重新设置状态
+	u.btnSave.SetEnabled(false)
+	u.btnDiscard.SetEnabled(false)
+	u.btnWriteFile.SetEnabled(true)
+}
+
+func (u *GameListUI) findIndex(name string) int {
+	for index := 0; index < u.lstGame.Count(); index++ {
+		if u.lstGame.Item(index).Text() == name {
+			return index
 		}
+	}
+	return -1
+}
+
+func (u *GameListUI) onDataDiscard() {
+	item, found := u.glp.Get(u.leName.Text())
+	if !found {
+		NoticeMessagef("游戏:%s 不存在", u.leName.Text())
+		return
+	}
+	if len(item.Path) == 0 { //不存在路径, 那么这个是要直接删除的
+		u.glp.Remove(item.Name)
+		index := u.findIndex(item.Name)
+		if index != -1 {
+			u.lstGame.TakeItem(index)
+		}
+	} else {
 		u.onDataNotify(item)
+	}
+	//重新设置状态
+	u.btnSave.SetEnabled(false)
+	u.btnDiscard.SetEnabled(false)
+}
+
+func (u *GameListUI) onDataCreate() {
+	//
+	var dialog = widgets.NewQInputDialog(nil, core.Qt__Dialog)
+	dialog.SetWindowTitle("Game")
+	dialog.SetLabelText("输入游戏名:")
+	dialog.SetTextEchoMode(widgets.QLineEdit__Normal)
+	dialog.SetInputMethodHints(core.Qt__ImhNone)
+	var data string
+	var ok bool = false
+	dialog.ConnectAccept(func() {
+		data = dialog.TextValue()
+		ok = true
+		dialog.AcceptDefault()
+	})
+	dialog.Exec()
+
+	if !ok {
+		return
+	}
+	u.btnSave.SetEnabled(true)
+	u.lstGame.AddItem(data)
+	g := &parser.GameListItem{Name: data}
+	u.glp.Set(g)
+	u.lstGame.SetCurrentRow(u.lstGame.Count() - 1)
+	u.btnDiscard.SetEnabled(true)
+}
+
+func (u *GameListUI) onDataDelete() {
+	name := u.leName.Text()
+	u.glp.Remove(name)
+	u.lstGame.TakeItem(u.lstGame.CurrentIndex().Row())
+	u.btnWriteFile.SetEnabled(true)
+}
+
+func (u *GameListUI) buildList() {
+	for _, name := range u.glp.GetList() {
+		u.lstGame.AddItem(name)
+	}
+	u.lstGame.SetCurrentIndex(core.NewQModelIndex())
+}
+
+func (u *GameListUI) onWriteToFile() {
+	err := u.glp.Save()
+	u.btnWriteFile.SetEnabled(false)
+	if err != nil {
+		NoticeMessagef("保存配置到文件失败, 错误信息:%v", err)
+		return
 	}
 }

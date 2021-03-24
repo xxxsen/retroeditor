@@ -81,6 +81,10 @@ func (g *GameListParser) GetList() []string {
 	return lst
 }
 
+func (g *GameListParser) Set(item *GameListItem) {
+	g.store[item.Name] = item
+}
+
 //Get 获取对应项
 func (g *GameListParser) Get(name string) (*GameListItem, bool) {
 	if item, ok := g.store[name]; ok {

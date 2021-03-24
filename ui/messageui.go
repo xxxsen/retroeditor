@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"fmt"
+
 	"github.com/therecipe/qt/widgets"
 )
 
@@ -19,4 +21,9 @@ func NoticeMessage(msg string) {
 	box := widgets.NewQMessageBox(nil)
 	box.SetText(msg)
 	box.Show()
+}
+
+func NoticeMessagef(fmtx string, args ...interface{}) {
+	msg := fmt.Sprintf(fmtx, args...)
+	NoticeMessage(msg)
 }
