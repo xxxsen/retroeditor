@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"path/filepath"
+	"retroeditor/fs"
 	"retroeditor/parser"
 
 	"github.com/therecipe/qt/core"
@@ -174,6 +175,10 @@ func (u *GameListUI) buildBasicInfo(grid *widgets.QGridLayout) {
 	u.leGenre.ConnectTextEdited(u.onModify)
 	u.lePlayer.ConnectTextEdited(u.onModify)
 	u.leDesc.ConnectTextChanged(func() { u.onModify("") })
+
+	//增加选框支持
+	u.lePath.ConnectMousePressEvent(u.onPathClick)
+
 }
 
 func (u *GameListUI) buildControl(grid *widgets.QGridLayout) {
@@ -219,16 +224,6 @@ func (u *GameListUI) buildPreviewInfo(grid *widgets.QGridLayout) {
 	grid.AddWidget2(u.vVideo, 2, 1, 0)
 }
 
-func (u *GameListUI) concatURL(relv string) string {
-	//绝对路径的话, 就不管了
-	if filepath.IsAbs(relv) {
-		return relv
-	}
-	loc := u.gameloc + string(filepath.Separator) + relv
-	loc = filepath.Clean(loc)
-	return loc
-}
-
 func (u *GameListUI) onDataNotify(m *parser.GameListItem) {
 	u.leName.SetEnabled(false)
 	u.leName.SetText(m.Name)
@@ -244,13 +239,13 @@ func (u *GameListUI) onDataNotify(m *parser.GameListItem) {
 	u.lePlayer.SetText(m.Players)
 	u.leDesc.SetText(m.Desc)
 	if len(m.Image) != 0 {
-		qp := gui.NewQPixmap3(u.concatURL(m.Image), "", 0)
+		qp := gui.NewQPixmap3(fs.MergePath(u.gameloc, m.Image), "", 0)
 		qp = qp.Scaled2(200, 200, core.Qt__KeepAspectRatio, core.Qt__FastTransformation)
 		u.picImage.SetPixmap(qp)
 	}
 	u.picImage.SetToolTip(m.Image)
 	if len(m.Marquee) != 0 {
-		qp := gui.NewQPixmap3(u.concatURL(m.Marquee), "", 0)
+		qp := gui.NewQPixmap3(fs.MergePath(u.gameloc, m.Marquee), "", 0)
 		qp = qp.Scaled2(200, 200, core.Qt__KeepAspectRatio, core.Qt__FastTransformation)
 		u.picMarquee.SetBaseSize2(100, 100)
 		u.picMarquee.SetPixmap(qp)
@@ -393,4 +388,18 @@ func (u *GameListUI) onWriteToFile() {
 		NoticeMessagef("保存配置到文件失败, 错误信息:%v", err)
 		return
 	}
+}
+
+func (u *GameListUI) onPathClick(*gui.QMouseEvent) {
+	file := widgets.QFileDialog_GetOpenFileName(nil, "选择游戏文件:", u.gameloc, "*.*", "*.*", widgets.QFileDialog__ReadOnly)
+	if len(file) == 0 {
+		return
+	}
+	ok := fs.IsParentDir(u.gameloc, file)
+	if !ok {
+		NoticeMessagef("游戏:%s 不存在roms目录中, 请手动复制进去。", file)
+		return
+	}
+	sub := "./" + fs.TrimPath(u.gameloc, file)
+	u.lePath.SetText(sub)
 }
