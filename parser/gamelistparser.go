@@ -13,11 +13,11 @@ type GameListItem struct {
 	Name        string   `xml:"name"`
 	Image       string   `xml:"image,omitempty"`
 	Video       string   `xml:"video,omitempty"`
-	PlayCount   int32    `xml:"playcount,omitempty"`
+	PlayCount   string   `xml:"playcount,omitempty"`
 	LastPlayed  string   `xml:"lastplayed,omitempty"`
 	Lang        string   `xml:"lang,omitempty"`
 	Desc        string   `xml:"desc,omitempty"`
-	Rating      float32  `xml:"rating,omitempty"`
+	Rating      string   `xml:"rating,omitempty"`
 	ReleaseDate string   `xml:"releasedate,omitempty"`
 	Developer   string   `xml:"developer,omitempty"`
 	Publisher   string   `xml:"publisher,omitempty"`
