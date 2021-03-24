@@ -20,6 +20,8 @@ func NewRetroUI(base string) *RetroUI {
 
 func (r *RetroUI) init() {
 	r.QMainWindow = widgets.NewQMainWindow(nil, 0)
+	desktop := widgets.QApplication_Desktop()
+	r.Move2((desktop.Width()-r.Width())/2, (desktop.Height()-r.Height())/2)
 	r.SetWindowTitle("RetroEditor")
 
 	var centralWidget = widgets.NewQWidget(r, 0)

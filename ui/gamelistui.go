@@ -71,6 +71,9 @@ func NewGameListUI(rui *RetroUI, gameloc string) *GameListUI {
 
 func (u *GameListUI) init() {
 	u.QMainWindow = widgets.NewQMainWindow(u.rui, 0)
+	u.SetMinimumSize2(1280, 720)
+	desktop := widgets.QApplication_Desktop()
+	u.Move2((desktop.Width()-u.Width())/2, (desktop.Height()-u.Height())/2)
 	u.SetWindowTitle(fmt.Sprintf("GameListEditor - %s", filepath.Base(u.gameloc)))
 	var centralWidget = widgets.NewQWidget(u, 0)
 
@@ -103,6 +106,13 @@ func (u *GameListUI) init() {
 	layout.AddLayout(layoutRight, 0, 1, 0)
 	//生成基础属性布局
 	var layoutBasicInfo = widgets.NewQGridLayout2()
+
+	//设置比例
+	layout.SetColumnStretch(0, 20)
+	layout.SetColumnStretch(1, 80)
+	layoutRight.SetColumnStretch(0, 80)
+	layoutRight.SetColumnStretch(1, 20)
+
 	layoutRight.AddLayout(layoutBasicInfo, 0, 0, 0)
 	//生成图片、视频框等布局
 	var layoutView = widgets.NewQGridLayout2()
@@ -209,6 +219,16 @@ func (u *GameListUI) buildPreviewInfo(grid *widgets.QGridLayout) {
 	grid.AddWidget2(u.vVideo, 2, 1, 0)
 }
 
+func (u *GameListUI) concatURL(relv string) string {
+	//绝对路径的话, 就不管了
+	if filepath.IsAbs(relv) {
+		return relv
+	}
+	loc := u.gameloc + string(filepath.Separator) + relv
+	loc = filepath.Clean(loc)
+	return loc
+}
+
 func (u *GameListUI) onDataNotify(m *parser.GameListItem) {
 	u.leName.SetEnabled(false)
 	u.leName.SetText(m.Name)
@@ -224,12 +244,15 @@ func (u *GameListUI) onDataNotify(m *parser.GameListItem) {
 	u.lePlayer.SetText(m.Players)
 	u.leDesc.SetText(m.Desc)
 	if len(m.Image) != 0 {
-		qp := gui.NewQPixmap3(m.Image, "", 0)
+		qp := gui.NewQPixmap3(u.concatURL(m.Image), "", 0)
+		qp = qp.Scaled2(200, 200, core.Qt__KeepAspectRatio, core.Qt__FastTransformation)
 		u.picImage.SetPixmap(qp)
 	}
 	u.picImage.SetToolTip(m.Image)
 	if len(m.Marquee) != 0 {
-		qp := gui.NewQPixmap3(m.Marquee, "", 0)
+		qp := gui.NewQPixmap3(u.concatURL(m.Marquee), "", 0)
+		qp = qp.Scaled2(200, 200, core.Qt__KeepAspectRatio, core.Qt__FastTransformation)
+		u.picMarquee.SetBaseSize2(100, 100)
 		u.picMarquee.SetPixmap(qp)
 	}
 	u.picMarquee.SetToolTip(m.Marquee)
