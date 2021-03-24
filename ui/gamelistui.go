@@ -402,4 +402,5 @@ func (u *GameListUI) onPathClick(*gui.QMouseEvent) {
 	}
 	sub := "./" + fs.TrimPath(u.gameloc, file)
 	u.lePath.SetText(sub)
+	u.onModify("")
 }
