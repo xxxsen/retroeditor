@@ -45,11 +45,13 @@ type UIGamelistForm struct {
 	LeGenre *widgets.QLineEdit
 	LeName *widgets.QLineEdit
 	LePath *widgets.QLineEdit
+	GridLayoutWidget *widgets.QWidget
 	GridLayout3 *widgets.QGridLayout
-	BtnDelete *widgets.QPushButton
 	BtnMod *widgets.QPushButton
-	BtnCreate *widgets.QPushButton
 	BtnWriteFile *widgets.QPushButton
+	BtnDelete *widgets.QPushButton
+	BtnCreate *widgets.QPushButton
+	BtnClean *widgets.QPushButton
 }
 
 func (this *UIGamelistForm) SetupUI(Form *widgets.QWidget) {
@@ -181,24 +183,29 @@ func (this *UIGamelistForm) SetupUI(Form *widgets.QWidget) {
 	this.LePath.SetEnabled(false)
 	this.GridLayout.AddWidget3(this.LePath, 0, 3, 1, 1, 0)
 	this.GridLayout5.AddLayout2(this.GridLayout, 0, 0, 1, 1, 0)
-	this.GridLayout3 = widgets.NewQGridLayout(this.LayoutWidget)
+	this.GridLayout7.AddLayout2(this.GridLayout5, 0, 0, 1, 1, 0)
+	this.GridLayoutWidget = widgets.NewQWidget(Form, core.Qt__Widget)
+	this.GridLayoutWidget.SetObjectName("GridLayoutWidget")
+	this.GridLayoutWidget.SetGeometry(core.NewQRect4(850, 670, 450, 30))
+	this.GridLayout3 = widgets.NewQGridLayout(this.GridLayoutWidget)
 	this.GridLayout3.SetObjectName("gridLayout_3")
 	this.GridLayout3.SetContentsMargins(0, 0, 0, 0)
 	this.GridLayout3.SetSpacing(0)
-	this.BtnDelete = widgets.NewQPushButton(this.LayoutWidget)
-	this.BtnDelete.SetObjectName("BtnDelete")
-	this.GridLayout3.AddWidget3(this.BtnDelete, 0, 0, 1, 1, 0)
-	this.BtnMod = widgets.NewQPushButton(this.LayoutWidget)
+	this.BtnMod = widgets.NewQPushButton(this.GridLayoutWidget)
 	this.BtnMod.SetObjectName("BtnMod")
-	this.GridLayout3.AddWidget3(this.BtnMod, 0, 2, 1, 1, 0)
-	this.BtnCreate = widgets.NewQPushButton(this.LayoutWidget)
-	this.BtnCreate.SetObjectName("BtnCreate")
-	this.GridLayout3.AddWidget3(this.BtnCreate, 0, 1, 1, 1, 0)
-	this.BtnWriteFile = widgets.NewQPushButton(this.LayoutWidget)
+	this.GridLayout3.AddWidget3(this.BtnMod, 0, 3, 1, 1, 0)
+	this.BtnWriteFile = widgets.NewQPushButton(this.GridLayoutWidget)
 	this.BtnWriteFile.SetObjectName("BtnWriteFile")
-	this.GridLayout3.AddWidget3(this.BtnWriteFile, 0, 3, 1, 1, 0)
-	this.GridLayout5.AddLayout2(this.GridLayout3, 1, 0, 1, 1, 0)
-	this.GridLayout7.AddLayout2(this.GridLayout5, 0, 0, 1, 1, 0)
+	this.GridLayout3.AddWidget3(this.BtnWriteFile, 0, 4, 1, 1, 0)
+	this.BtnDelete = widgets.NewQPushButton(this.GridLayoutWidget)
+	this.BtnDelete.SetObjectName("BtnDelete")
+	this.GridLayout3.AddWidget3(this.BtnDelete, 0, 1, 1, 1, 0)
+	this.BtnCreate = widgets.NewQPushButton(this.GridLayoutWidget)
+	this.BtnCreate.SetObjectName("BtnCreate")
+	this.GridLayout3.AddWidget3(this.BtnCreate, 0, 2, 1, 1, 0)
+	this.BtnClean = widgets.NewQPushButton(this.GridLayoutWidget)
+	this.BtnClean.SetObjectName("BtnClean")
+	this.GridLayout3.AddWidget3(this.BtnClean, 0, 0, 1, 1, 0)
 
 
     this.RetranslateUi(Form)
@@ -225,8 +232,9 @@ func (this *UIGamelistForm) RetranslateUi(Form *widgets.QWidget) {
 	this.Label6.SetText(_translate("Form", "好评率", "", -1))
 	this.Label5.SetText(_translate("Form", "语言", "", -1))
 	this.Label7.SetText(_translate("Form", "发行时间", "", -1))
-	this.BtnDelete.SetText(_translate("Form", "删除游戏(&D)", "", -1))
 	this.BtnMod.SetText(_translate("Form", "修改游戏(&S)", "", -1))
-	this.BtnCreate.SetText(_translate("Form", "创建游戏(&N)", "", -1))
 	this.BtnWriteFile.SetText(_translate("Form", "写入文件(&W)", "", -1))
+	this.BtnDelete.SetText(_translate("Form", "删除游戏(&D)", "", -1))
+	this.BtnCreate.SetText(_translate("Form", "创建游戏(&N)", "", -1))
+	this.BtnClean.SetText(_translate("Form", "清理无效(&C)", "", -1))
 }

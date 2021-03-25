@@ -244,12 +244,26 @@
     <rect>
      <x>850</x>
      <y>670</y>
-     <width>342</width>
+     <width>450</width>
      <height>30</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout_3">
-    <item row="0" column="0">
+    <item row="0" column="3">
+     <widget class="QPushButton" name="btnMod">
+      <property name="text">
+       <string>修改游戏(&amp;S)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="4">
+     <widget class="QPushButton" name="btnWriteFile">
+      <property name="text">
+       <string>写入文件(&amp;W)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
      <widget class="QPushButton" name="btnDelete">
       <property name="text">
        <string>删除游戏(&amp;D)</string>
@@ -257,23 +271,16 @@
      </widget>
     </item>
     <item row="0" column="2">
-     <widget class="QPushButton" name="btnMod">
-      <property name="text">
-       <string>修改游戏(&amp;S)</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
      <widget class="QPushButton" name="btnCreate">
       <property name="text">
        <string>创建游戏(&amp;N)</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="3">
-     <widget class="QPushButton" name="btnWriteFile">
+    <item row="0" column="0">
+     <widget class="QPushButton" name="btnClean">
       <property name="text">
-       <string>写入文件(&amp;W)</string>
+       <string>清理无效(&amp;C)</string>
       </property>
      </widget>
     </item>

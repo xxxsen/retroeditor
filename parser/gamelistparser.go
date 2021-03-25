@@ -82,7 +82,7 @@ func (g *GameListParser) GetAll() map[string]*GameListItem {
 //GetList 获取列表, 方便有序输出
 func (g *GameListParser) GetList() []string {
 	var lst []string
-	for _, item := range g.gl.Games {
+	for _, item := range g.store {
 		lst = append(lst, item.Path)
 	}
 	sort.Strings(lst)

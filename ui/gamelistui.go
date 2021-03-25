@@ -2,6 +2,8 @@ package ui
 
 import (
 	"fmt"
+	"log"
+	"path/filepath"
 	"retroeditor/fs"
 	"retroeditor/parser"
 	"retroeditor/uigen"
@@ -25,6 +27,7 @@ func NewGameListUI(gameloc string) *GameListUI {
 	u := &GameListUI{gameloc: gameloc, QWidget: widgets.NewQWidget(nil, 0), glp: parser.NewGameListParser(gameloc + "/" + "gamelist.xml")}
 	u.form = &uigen.UIGamelistForm{}
 	u.form.SetupUI(u.QWidget)
+	u.SetWindowTitle(fmt.Sprintf("GameListEditor - %s", filepath.Base(u.gameloc)))
 	u.init()
 	return u
 }
@@ -52,6 +55,35 @@ func (u *GameListUI) init() {
 	u.form.BtnDelete.ConnectClicked(u.onGameDelete)
 	u.form.BtnCreate.ConnectClicked(u.onGameCreate)
 	u.form.BtnMod.ConnectClicked(u.onGameMod)
+	u.form.BtnClean.ConnectClicked(u.onCleanInvalid)
+}
+
+func (u *GameListUI) onCleanInvalid(bool) {
+	m := u.glp.GetAll()
+	total := len(m)
+	erase := 0
+	for fp := range m {
+		loc := fs.MergePath(u.gameloc, fp)
+		exist, err := fs.IsExist(loc)
+		if err != nil {
+			log.Printf("Check exist fail, path:%s, err:%v", loc, err)
+			continue
+		}
+		if !exist {
+			//log.Printf("Found path:%s invalid, remove it.", loc)
+			u.glp.Remove(fp)
+			erase++
+		}
+	}
+	u.form.LstGame.SetCurrentRow(-1)
+	u.form.LstGame.Clear()
+	u.form.LstGame.DisconnectItemSelectionChanged()
+	lst := u.glp.GetList()
+	for _, item := range lst {
+		u.form.LstGame.AddItem(item)
+	}
+	u.form.LstGame.ConnectItemSelectionChanged(u.onListItemSelect)
+	NoticeMessagef("清理无效文件完成, 共计%d个游戏, 此次清理无效游戏%d个。", total, erase)
 }
 
 func (u *GameListUI) onGameMod(bool) {
@@ -106,6 +138,9 @@ func (u *GameListUI) onGameDelete(bool) {
 }
 
 func (u *GameListUI) onListItemSelect() {
+	if u.form.LstGame.CurrentRow() == -1 {
+		return
+	}
 	name := u.form.LstGame.CurrentItem().Text()
 	item, found := u.glp.Get(name)
 	if !found {
