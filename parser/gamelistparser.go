@@ -3,8 +3,11 @@ package parser
 import (
 	"encoding/xml"
 	"io/ioutil"
+	"log"
 	"os"
+	"retroeditor/fs"
 	"sort"
+	"strings"
 )
 
 //GameListItem 数据项
@@ -58,10 +61,15 @@ func (g *GameListParser) Parse() error {
 	}
 	for index := range g.gl.Games {
 		item := &g.gl.Games[index]
-		if len(item.Name) == 0 || len(item.Path) == 0 {
+		if len(item.Path) == 0 {
 			continue
 		}
-		g.store[item.Name] = item
+		fmtPath := "./" + strings.Join(fs.SplitPath(item.Path), "/")
+		if fmtPath != item.Path {
+			//暂时只打印日志, 后续再看要不要用格式化后的路径
+			log.Printf("Path may invalid, old:%s, fmt:%s\n", item.Path, fmtPath)
+		}
+		g.store[item.Path] = item
 	}
 	return nil
 }
@@ -75,19 +83,19 @@ func (g *GameListParser) GetAll() map[string]*GameListItem {
 func (g *GameListParser) GetList() []string {
 	var lst []string
 	for _, item := range g.gl.Games {
-		lst = append(lst, item.Name)
+		lst = append(lst, item.Path)
 	}
 	sort.Strings(lst)
 	return lst
 }
 
 func (g *GameListParser) Set(item *GameListItem) {
-	g.store[item.Name] = item
+	g.store[item.Path] = item
 }
 
 //Get 获取对应项
-func (g *GameListParser) Get(name string) (*GameListItem, bool) {
-	if item, ok := g.store[name]; ok {
+func (g *GameListParser) Get(path string) (*GameListItem, bool) {
+	if item, ok := g.store[path]; ok {
 		return item, true
 	}
 	return nil, false
@@ -108,6 +116,7 @@ func (g *GameListParser) Save() error {
 	g.gl.Games = nil
 	for _, item := range g.store {
 		g.gl.Games = append(g.gl.Games, *item)
+
 	}
 	data, err := xml.MarshalIndent(&g.gl, " ", "  ")
 	if err != nil {

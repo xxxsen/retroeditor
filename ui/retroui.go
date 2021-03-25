@@ -47,7 +47,7 @@ func (r *RetroUI) init() {
 func (r *RetroUI) btnCallback(btn *widgets.QPushButton) func(ch bool) {
 	return func(bool) {
 		gamedir := r.dirmgr.GetBase() + string(filepath.Separator) + btn.Text()
-		gameui := NewGameListUI(r, gamedir)
+		gameui := NewGameListUI(gamedir)
 		gameui.Show()
 	}
 }

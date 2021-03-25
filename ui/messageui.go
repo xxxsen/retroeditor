@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/therecipe/qt/widgets"
 )
@@ -26,4 +27,5 @@ func NoticeMessage(msg string) {
 func NoticeMessagef(fmtx string, args ...interface{}) {
 	msg := fmt.Sprintf(fmtx, args...)
 	NoticeMessage(msg)
+	log.Printf("%s\n", msg)
 }
