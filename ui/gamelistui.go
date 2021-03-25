@@ -2,12 +2,16 @@ package ui
 
 import (
 	"fmt"
+	"log"
 	"path/filepath"
 	"retroeditor/fs"
+	"retroeditor/mgr"
 	"retroeditor/parser"
+	"strings"
 
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/gui"
+	"github.com/therecipe/qt/multimedia"
 	"github.com/therecipe/qt/widgets"
 )
 
@@ -21,7 +25,7 @@ type GameListUI struct {
 	lePath        *widgets.QLineEdit
 	leName        *widgets.QLineEdit
 	picImage      *widgets.QLabel
-	vVideo        *widgets.QLabel
+	vVideo        *multimedia.QVideoWidget
 	lePlayCnt     *widgets.QLineEdit
 	leLastPlay    *widgets.QLineEdit
 	leLang        *widgets.QLineEdit
@@ -40,9 +44,13 @@ type GameListUI struct {
 	btnSave      *widgets.QPushButton
 	btnDiscard   *widgets.QPushButton
 	btnWriteFile *widgets.QPushButton
+	btnClean     *widgets.QPushButton
 
 	//list
 	lstGame *widgets.QListWidget
+
+	//videoplayer
+	videoplayer *multimedia.QMediaPlayer
 }
 
 func NewGameListUI(rui *RetroUI, gameloc string) *GameListUI {
@@ -53,7 +61,7 @@ func NewGameListUI(rui *RetroUI, gameloc string) *GameListUI {
 		lePath:        widgets.NewQLineEdit(nil),
 		leName:        widgets.NewQLineEdit(nil),
 		picImage:      widgets.NewQLabel(nil, 0),
-		vVideo:        widgets.NewQLabel(nil, 0),
+		vVideo:        multimedia.NewQVideoWidget(nil),
 		lePlayCnt:     widgets.NewQLineEdit(nil),
 		leLastPlay:    widgets.NewQLineEdit(nil),
 		leLang:        widgets.NewQLineEdit(nil),
@@ -65,6 +73,7 @@ func NewGameListUI(rui *RetroUI, gameloc string) *GameListUI {
 		leGenre:       widgets.NewQLineEdit(nil),
 		lePlayer:      widgets.NewQLineEdit(nil),
 		picMarquee:    widgets.NewQLabel(nil, 0),
+		videoplayer:   multimedia.NewQMediaPlayer(nil, multimedia.QMediaPlayer__VideoSurface),
 	}
 	u.init()
 	return u
@@ -182,11 +191,12 @@ func (u *GameListUI) buildBasicInfo(grid *widgets.QGridLayout) {
 }
 
 func (u *GameListUI) buildControl(grid *widgets.QGridLayout) {
-	u.btnDelete = widgets.NewQPushButton2("删除游戏(&D)", nil)
-	u.btnAdd = widgets.NewQPushButton2("添加游戏(&N)", nil)
-	u.btnSave = widgets.NewQPushButton2("保存修改(&S)", nil)
-	u.btnDiscard = widgets.NewQPushButton2("还原修改(&C)", nil)
-	u.btnWriteFile = widgets.NewQPushButton2("写入文件(&W)", nil)
+	u.btnDelete = widgets.NewQPushButton2("删除游戏(&D)", u)
+	u.btnAdd = widgets.NewQPushButton2("添加游戏(&N)", u)
+	u.btnSave = widgets.NewQPushButton2("保存修改(&S)", u)
+	u.btnDiscard = widgets.NewQPushButton2("还原修改(&C)", u)
+	u.btnWriteFile = widgets.NewQPushButton2("写入文件(&W)", u)
+	u.btnClean = widgets.NewQPushButton2("清理无效文件(&E)", u)
 
 	//初始不能修改
 	u.btnSave.SetEnabled(false)
@@ -194,12 +204,21 @@ func (u *GameListUI) buildControl(grid *widgets.QGridLayout) {
 	u.btnDelete.SetEnabled(false)
 	u.btnWriteFile.SetEnabled(false)
 
+	//生成2层布局
+	layoutNormalCtl := widgets.NewQGridLayout2()
+	layoutSpecCtl := widgets.NewQGridLayout2()
+	grid.AddLayout(layoutNormalCtl, 0, 0, 0)
+	grid.AddLayout(layoutSpecCtl, 1, 0, 0)
+
 	//添加到布局里面
-	grid.AddWidget2(u.btnDelete, 0, 0, 0)
-	grid.AddWidget2(u.btnAdd, 0, 1, 0)
-	grid.AddWidget2(u.btnSave, 0, 2, 0)
-	grid.AddWidget2(u.btnDiscard, 0, 3, 0)
-	grid.AddWidget2(u.btnWriteFile, 0, 4, 0)
+	//普通按钮
+	layoutNormalCtl.AddWidget2(u.btnDelete, 0, 0, 0)
+	layoutNormalCtl.AddWidget2(u.btnAdd, 0, 1, 0)
+	layoutNormalCtl.AddWidget2(u.btnSave, 0, 2, 0)
+	layoutNormalCtl.AddWidget2(u.btnDiscard, 0, 3, 0)
+	layoutNormalCtl.AddWidget2(u.btnWriteFile, 0, 4, 0)
+	//特殊按钮
+	layoutSpecCtl.AddWidget2(u.btnClean, 0, 0, 0)
 
 	//设置回调
 	u.btnSave.ConnectClicked(func(bool) { u.onDataSave() })
@@ -207,6 +226,7 @@ func (u *GameListUI) buildControl(grid *widgets.QGridLayout) {
 	u.btnAdd.ConnectClicked(func(bool) { u.onDataCreate() })
 	u.btnDelete.ConnectClicked(func(bool) { u.onDataDelete() })
 	u.btnWriteFile.ConnectClicked(func(bool) { u.onWriteToFile() })
+	u.btnClean.ConnectClicked(func(bool) { u.onCleanInvalidFile() })
 }
 
 func (u *GameListUI) buildPreviewInfo(grid *widgets.QGridLayout) {
@@ -226,10 +246,18 @@ func (u *GameListUI) buildPreviewInfo(grid *widgets.QGridLayout) {
 	//增加选框支持
 	u.picImage.ConnectMousePressEvent(u.onImageClick)
 	u.picMarquee.ConnectMousePressEvent(u.onMarqueeClick)
+	u.vVideo.ConnectMousePressEvent(u.onVideoClick)
 
 	//设置边框
 	u.picImage.SetFrameShape(widgets.QFrame__Box)
 	u.picMarquee.SetFrameShape(widgets.QFrame__Box)
+	u.vVideo.Resize2(200, 200)
+	u.vVideo.Show()
+
+	//
+	u.videoplayer.ConnectError2(func(err multimedia.QMediaPlayer__Error) {
+		log.Printf("Play video but recv err:%v\n", err)
+	})
 }
 
 func (u *GameListUI) onDataNotify(m *parser.GameListItem) {
@@ -252,12 +280,16 @@ func (u *GameListUI) onDataNotify(m *parser.GameListItem) {
 }
 
 func (u *GameListUI) loadVideo(video string) {
-	//TODO:add video support
-	// if len(m.Video) != 0 {
-	// 	player := multimedia.NewQMediaPlayer(nil, 0)
-	// 	player.SetMedia(multimedia.NewQMediaContent2(core.QUrl_FromLocalFile(m.Video)), nil)
-	// 	player.Play()
-	// }
+	u.vVideo.SetToolTip(video)
+	if len(video) != 0 {
+		u.videoplayer.Stop()
+		u.videoplayer.SetVideoOutput(u.vVideo)
+		uri := fs.MergePath(u.gameloc, video)
+		u.videoplayer.SetMedia(multimedia.NewQMediaContent2(
+			core.QUrl_FromLocalFile(uri)), nil)
+		u.videoplayer.Play()
+		u.vVideo.AdjustSize()
+	}
 }
 
 func (u *GameListUI) loadImage(img string) {
@@ -456,4 +488,117 @@ func (u *GameListUI) onMarqueeClick(*gui.QMouseEvent) {
 	sub := "./" + fs.TrimPath(u.gameloc, file)
 	u.loadMarquee(sub)
 	u.onModify("")
+}
+
+func (u *GameListUI) onVideoClick(*gui.QMouseEvent) {
+	file := widgets.QFileDialog_GetOpenFileName(nil, "选择封面文件:",
+		u.gameloc, "*.mp4 *.wmv", "*.*", widgets.QFileDialog__ReadOnly)
+	if len(file) == 0 {
+		return
+	}
+	ok := fs.IsParentDir(u.gameloc, file)
+	if !ok {
+		NoticeMessagef("视频:%s 不存在roms目录中, 请手动复制进去。", file)
+		return
+	}
+	sub := "./" + fs.TrimPath(u.gameloc, file)
+	u.loadVideo(sub)
+	u.onModify("")
+}
+
+func (u *GameListUI) onCleanInvalidFile() {
+	//正常来说, 目录下会有很多没有关联的rom、图片文件
+	//这个功能就是来清理掉这些异常文件的
+
+	//需要删除的项(gamelist.xml)
+	var needRemoveItem []string
+	//需要删除的文件
+	var needRemoveFile []string
+	//有效的扩展
+	var validExt = make(map[string]bool)
+
+	//被使用的文件, 包括rom, image, video
+	var usedUrl = make(map[string]bool)
+
+	//1. 检查gamelist.xml的roms文件是否存在
+	mp := u.glp.GetAll()
+	for _, item := range mp {
+		//通过配置的rom文件自动探测支持的扩展
+		//探测rom
+		{
+			ext := strings.ToLower(filepath.Ext(item.Path))
+			if len(ext) != 0 {
+				validExt[ext] = true
+			}
+		}
+		//探测image
+		{
+			ext := strings.ToLower(filepath.Ext(item.Image))
+			if len(ext) != 0 {
+				validExt[ext] = true
+			}
+		}
+		//探测marquee
+		{
+			ext := strings.ToLower(filepath.Ext(item.Marquee))
+			if len(ext) != 0 {
+				validExt[ext] = true
+			}
+		}
+		//探测video
+		{
+			ext := strings.ToLower(filepath.Ext(item.Video))
+			if len(ext) != 0 {
+				validExt[ext] = true
+			}
+		}
+		//检查文件是否存在
+		loc := fs.MergePath(u.gameloc, item.Path)
+		exist, err := fs.IsExist(loc)
+		if err != nil {
+			log.Printf("Read loc:%s fail, err:%v\n", loc, err)
+			continue
+		}
+		if !exist {
+			needRemoveItem = append(needRemoveItem, item.Name)
+			continue
+		}
+		//构建当前项用到的所有路径
+		{
+			fmtPath := strings.Join(fs.SplitPath(item.Path), "/")
+			fmtImage := strings.Join(fs.SplitPath(item.Image), "/")
+			fmtMarquee := strings.Join(fs.SplitPath(item.Marquee), "/")
+			fmtVideo := strings.Join(fs.SplitPath(item.Video), "/")
+			if len(fmtPath) != 0 {
+				usedUrl[fmtPath] = true
+			}
+			if len(fmtImage) != 0 {
+				usedUrl[fmtImage] = true
+			}
+			if len(fmtMarquee) != 0 {
+				usedUrl[fmtMarquee] = true
+			}
+			if len(fmtVideo) != 0 {
+				usedUrl[fmtVideo] = true
+			}
+		}
+	}
+	//检查目录下的rom, 图片, 视频是否都在gamelist.xml中被引用
+	fileMgr := mgr.NewFileMgr(u.gameloc)
+	listFiles, err := fileMgr.Search(validExt)
+	if err != nil {
+		NoticeMessagef("读取文件列表失败, 错误信息:%v", err)
+		return
+	}
+	for _, item := range listFiles {
+		fmtPath := fs.TrimPath(u.gameloc, item)
+		if _, ok := usedUrl[fmtPath]; !ok {
+			log.Printf("Found url:%s not used, fmt:%s\n", item, fmtPath)
+			needRemoveFile = append(needRemoveFile, fmtPath)
+		}
+	}
+	//TODO: 执行清理
+
+	//TODO:提供自动去重能力
+	//TODO:提供自动添加不存在的gamelist.xml能力
 }
