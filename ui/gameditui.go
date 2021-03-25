@@ -68,11 +68,16 @@ func (u *GameditUI) init() {
 	desktop := widgets.QApplication_Desktop()
 	u.Move2((desktop.Width()-u.Width())/2, (desktop.Height()-u.Height())/2)
 
+	//
 	u.form.BtnCancel.ConnectClicked(func(bool) { u.Close() })
 	u.form.BtnSave.ConnectClicked(func(bool) { u.onSave() })
 	u.form.LePath.ConnectMousePressEvent(u.onPathClick)
 	u.form.PicImage.ConnectMousePressEvent(u.onImageClick)
 	u.form.PicMarquee.ConnectMousePressEvent(u.onMarqueeClick)
+
+	//输入类型限制
+	u.form.LePlayCnt.SetValidator(gui.NewQIntValidator2(0, 100000, u))
+	u.form.LePlayer.SetValidator(gui.NewQRegExpValidator2(core.NewQRegExp2("^\\d+-\\d+|\\d+$", 0, 0), nil))
 }
 
 func (u *GameditUI) onSave() {
