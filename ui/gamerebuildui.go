@@ -25,6 +25,7 @@ type GameRebuildUI struct {
 	eraseXmlList   []string
 	addXmlMap      map[string]string
 	eraseMediaList []string
+	eraseRomList   []string
 }
 
 //NewGameRebuildUI NewGameRebuildUI
@@ -45,6 +46,17 @@ func (u *GameRebuildUI) init() {
 	u.form.BtnCancel.ConnectClicked(func(bool) { u.Close() })
 	u.form.BtnScan.ConnectClicked(u.onScan)
 	u.form.BtnExec.ConnectClicked(u.onExec)
+
+	u.form.CbAddXml.ConnectClicked(func(ck bool) {
+		if ck {
+			u.form.CbCleanRom.SetChecked(false)
+		}
+	})
+	u.form.CbCleanRom.ConnectClicked(func(ck bool) {
+		if ck {
+			u.form.CbAddXml.SetChecked(false)
+		}
+	})
 
 	u.buildSupportExt()
 }
@@ -102,6 +114,9 @@ func (u *GameRebuildUI) onScan(bool) {
 	if u.form.CbCleanMedia.CheckState() == core.Qt__Checked {
 		u.scanCleanMedia()
 	}
+	if u.form.CbCleanRom.CheckState() == core.Qt__Checked {
+		u.scanCleanRom()
+	}
 	NoticeMessagef("扫描完成!")
 }
 
@@ -110,6 +125,38 @@ func (u *GameRebuildUI) isValidExt(ext string) bool {
 		return false
 	}
 	return true
+}
+
+func (u *GameRebuildUI) scanCleanRom() {
+	exts := strings.Split(u.form.LeRomExt.Text(), ";")
+	filters := make(map[string]bool)
+	for _, ext := range exts {
+		if !u.isValidExt(ext) {
+			continue
+		}
+		filters[ext] = true
+	}
+	if len(filters) == 0 {
+		NoticeMessagef("未找到rom扩展名信息, 跳过rom清理扫描\n")
+		return
+	}
+
+	fm := mgr.NewFileMgr(u.gamelist.gameloc)
+
+	lst, err := fm.Search(filters)
+	if err != nil {
+		NoticeMessagef("从文件搜索rom信息异常, 错误:%v", err)
+		return
+	}
+	m := u.gamelist.glp.GetAll()
+	for _, item := range lst {
+		sub := "./" + fs.TrimPath(u.gamelist.gameloc, item)
+		if _, ok := m[sub]; ok {
+			continue
+		}
+		u.eraseRomList = append(u.eraseRomList, item)
+		u.form.LstCleanRom.AddItem(sub)
+	}
 }
 
 func (u *GameRebuildUI) scanCleanMedia() {
@@ -225,10 +272,20 @@ func (u *GameRebuildUI) onExec(bool) {
 		for _, item := range u.eraseMediaList {
 			err := os.Remove(item)
 			if err != nil {
-				log.Printf("Remove item:%s fail, err:%v\n", item, err)
+				log.Printf("Remove media item:%s fail, err:%v", item, err)
 				continue
 			}
-			log.Printf("Remove file:%s", item)
+			log.Printf("Remove media file:%s", item)
+		}
+	}
+	if u.form.CbCleanRom.CheckState() == core.Qt__Checked {
+		for _, item := range u.eraseRomList {
+			err := os.Remove(item)
+			if err != nil {
+				log.Printf("Remove rom item:%s fail, err:%v", item, err)
+				continue
+			}
+			log.Printf("Remove rom file:%s", item)
 		}
 	}
 	//
@@ -244,6 +301,6 @@ func (u *GameRebuildUI) onExec(bool) {
 	}
 	//保存到文件
 	u.gamelist.glp.Save()
-	NoticeMessagef("重建完成, 清理XML:%d项, 添加XML:%d项, 清理媒体文件:%d项",
-		len(u.eraseXmlList), len(u.addXmlMap), len(u.eraseMediaList))
+	NoticeMessagef("重建完成, 清理XML:%d项, 添加XML:%d项, 清理媒体文件:%d项, 清理rom文件:%d项",
+		len(u.eraseXmlList), len(u.addXmlMap), len(u.eraseMediaList), len(u.eraseRomList))
 }

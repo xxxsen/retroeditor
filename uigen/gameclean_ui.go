@@ -36,6 +36,10 @@ type UIGamecleanDialog struct {
 	GridLayout8 *widgets.QGridLayout
 	Label3 *widgets.QLabel
 	LeVideoExt *widgets.QLineEdit
+	GridLayoutWidget9 *widgets.QWidget
+	GridLayout9 *widgets.QGridLayout
+	LstCleanRom *widgets.QListWidget
+	CbCleanRom *widgets.QCheckBox
 }
 
 func (this *UIGamecleanDialog) SetupUI(Dialog *widgets.QDialog) {
@@ -75,7 +79,7 @@ func (this *UIGamecleanDialog) SetupUI(Dialog *widgets.QDialog) {
 	this.GridLayout2.AddWidget3(this.CbAddXml, 0, 0, 1, 1, 0)
 	this.GridLayoutWidget4 = widgets.NewQWidget(Dialog, core.Qt__Widget)
 	this.GridLayoutWidget4.SetObjectName("GridLayoutWidget4")
-	this.GridLayoutWidget4.SetGeometry(core.NewQRect4(540, 110, 202, 391))
+	this.GridLayoutWidget4.SetGeometry(core.NewQRect4(470, 110, 202, 391))
 	this.GridLayout4 = widgets.NewQGridLayout(this.GridLayoutWidget4)
 	this.GridLayout4.SetObjectName("gridLayout_4")
 	this.GridLayout4.SetContentsMargins(0, 0, 0, 0)
@@ -144,6 +148,22 @@ func (this *UIGamecleanDialog) SetupUI(Dialog *widgets.QDialog) {
 	this.LeVideoExt = widgets.NewQLineEdit(this.GridLayoutWidget8)
 	this.LeVideoExt.SetObjectName("LeVideoExt")
 	this.GridLayout8.AddWidget3(this.LeVideoExt, 0, 1, 1, 1, 0)
+	this.GridLayoutWidget9 = widgets.NewQWidget(Dialog, core.Qt__Widget)
+	this.GridLayoutWidget9.SetObjectName("GridLayoutWidget9")
+	this.GridLayoutWidget9.SetGeometry(core.NewQRect4(690, 110, 202, 391))
+	this.GridLayout9 = widgets.NewQGridLayout(this.GridLayoutWidget9)
+	this.GridLayout9.SetObjectName("gridLayout_9")
+	this.GridLayout9.SetContentsMargins(0, 0, 0, 0)
+	this.GridLayout9.SetSpacing(0)
+	this.LstCleanRom = widgets.NewQListWidget(this.GridLayoutWidget9)
+	this.LstCleanRom.SetObjectName("LstCleanRom")
+	this.LstCleanRom.SetMinimumSize(core.NewQSize2(200, 0))
+	this.GridLayout9.AddWidget3(this.LstCleanRom, 1, 0, 1, 1, 0)
+	this.CbCleanRom = widgets.NewQCheckBox(this.GridLayoutWidget9)
+	this.CbCleanRom.SetObjectName("CbCleanRom")
+	this.CbCleanRom.SetChecked(false)
+	this.CbCleanRom.SetTristate(false)
+	this.GridLayout9.AddWidget3(this.CbCleanRom, 0, 0, 1, 1, 0)
 
 
     this.RetranslateUi(Dialog)
@@ -162,4 +182,5 @@ func (this *UIGamecleanDialog) RetranslateUi(Dialog *widgets.QDialog) {
 	this.Label.SetText(_translate("Dialog", "rom扩展名", "", -1))
 	this.Label2.SetText(_translate("Dialog", "图片扩展名", "", -1))
 	this.Label3.SetText(_translate("Dialog", "视频扩展名", "", -1))
+	this.CbCleanRom.SetText(_translate("Dialog", "未配置Rom清理", "", -1))
 }
