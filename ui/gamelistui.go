@@ -2,7 +2,6 @@ package ui
 
 import (
 	"fmt"
-	"log"
 	"path/filepath"
 	"retroeditor/fs"
 	"retroeditor/parser"
@@ -55,35 +54,17 @@ func (u *GameListUI) init() {
 	u.form.BtnDelete.ConnectClicked(u.onGameDelete)
 	u.form.BtnCreate.ConnectClicked(u.onGameCreate)
 	u.form.BtnMod.ConnectClicked(u.onGameMod)
-	u.form.BtnClean.ConnectClicked(u.onCleanInvalid)
+	u.form.BtnRebuild.ConnectClicked(u.onRebuildGameList)
+	u.form.BtnWriteFile.ConnectClicked(u.onWriteToFile)
 }
 
-func (u *GameListUI) onCleanInvalid(bool) {
-	m := u.glp.GetAll()
-	total := len(m)
-	erase := 0
-	for fp := range m {
-		loc := fs.MergePath(u.gameloc, fp)
-		exist, err := fs.IsExist(loc)
-		if err != nil {
-			log.Printf("Check exist fail, path:%s, err:%v", loc, err)
-			continue
-		}
-		if !exist {
-			//log.Printf("Found path:%s invalid, remove it.", loc)
-			u.glp.Remove(fp)
-			erase++
-		}
-	}
-	u.form.LstGame.SetCurrentRow(-1)
-	u.form.LstGame.Clear()
-	u.form.LstGame.DisconnectItemSelectionChanged()
-	lst := u.glp.GetList()
-	for _, item := range lst {
-		u.form.LstGame.AddItem(item)
-	}
-	u.form.LstGame.ConnectItemSelectionChanged(u.onListItemSelect)
-	NoticeMessagef("清理无效文件完成, 共计%d个游戏, 此次清理无效游戏%d个。", total, erase)
+func (u *GameListUI) onWriteToFile(bool) {
+	u.glp.Save()
+}
+
+func (u *GameListUI) onRebuildGameList(bool) {
+	dig := NewGameRebuildUI(u)
+	dig.Exec()
 }
 
 func (u *GameListUI) onGameMod(bool) {

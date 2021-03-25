@@ -110,10 +110,18 @@
       <item row="0" column="0">
        <layout class="QGridLayout" name="gridLayout">
         <item row="6" column="3">
-         <widget class="QLineEdit" name="leRate"/>
+         <widget class="QLineEdit" name="leRate">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item row="11" column="3">
-         <widget class="QLineEdit" name="lePlayer"/>
+         <widget class="QLineEdit" name="lePlayer">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item row="4" column="1">
          <widget class="QLabel" name="label_4">
@@ -144,10 +152,18 @@
          </widget>
         </item>
         <item row="4" column="3">
-         <widget class="QLineEdit" name="leLastPlay"/>
+         <widget class="QLineEdit" name="leLastPlay">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item row="8" column="3">
-         <widget class="QLineEdit" name="leDev"/>
+         <widget class="QLineEdit" name="leDev">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item row="8" column="1">
          <widget class="QLabel" name="label_8">
@@ -178,10 +194,18 @@
          </widget>
         </item>
         <item row="12" column="3">
-         <widget class="QTextEdit" name="leDesc"/>
+         <widget class="QTextEdit" name="leDesc">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item row="3" column="3">
-         <widget class="QLineEdit" name="lePlayCnt"/>
+         <widget class="QLineEdit" name="lePlayCnt">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item row="9" column="1">
          <widget class="QLabel" name="label_9">
@@ -205,10 +229,18 @@
          </widget>
         </item>
         <item row="9" column="3">
-         <widget class="QLineEdit" name="lePub"/>
+         <widget class="QLineEdit" name="lePub">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item row="7" column="3">
-         <widget class="QLineEdit" name="leReleaseDate"/>
+         <widget class="QLineEdit" name="leReleaseDate">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item row="7" column="1">
          <widget class="QLabel" name="label_7">
@@ -218,18 +250,30 @@
          </widget>
         </item>
         <item row="5" column="3">
-         <widget class="QLineEdit" name="leLang"/>
+         <widget class="QLineEdit" name="leLang">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item row="10" column="3">
-         <widget class="QLineEdit" name="leGenre"/>
+         <widget class="QLineEdit" name="leGenre">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item row="1" column="3">
-         <widget class="QLineEdit" name="leName"/>
+         <widget class="QLineEdit" name="leName">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item row="0" column="3">
          <widget class="QLineEdit" name="lePath">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -244,7 +288,7 @@
     <rect>
      <x>850</x>
      <y>670</y>
-     <width>450</width>
+     <width>454</width>
      <height>30</height>
     </rect>
    </property>
@@ -278,9 +322,9 @@
      </widget>
     </item>
     <item row="0" column="0">
-     <widget class="QPushButton" name="btnClean">
+     <widget class="QPushButton" name="btnRebuild">
       <property name="text">
-       <string>清理无效(&amp;C)</string>
+       <string>重建GameList(&amp;R)</string>
       </property>
      </widget>
     </item>
