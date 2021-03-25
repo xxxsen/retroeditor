@@ -38,8 +38,11 @@
       <property name="text">
        <string>GameList.xml清理项</string>
       </property>
-      <property name="tristate">
+      <property name="checked">
        <bool>true</bool>
+      </property>
+      <property name="tristate">
+       <bool>false</bool>
       </property>
      </widget>
     </item>
@@ -70,8 +73,11 @@
       <property name="text">
        <string>GameList.xml添加项</string>
       </property>
-      <property name="tristate">
+      <property name="checked">
        <bool>true</bool>
+      </property>
+      <property name="tristate">
+       <bool>false</bool>
       </property>
      </widget>
     </item>
@@ -102,8 +108,11 @@
       <property name="text">
        <string>图片/视频清理项</string>
       </property>
-      <property name="tristate">
+      <property name="checked">
        <bool>true</bool>
+      </property>
+      <property name="tristate">
+       <bool>false</bool>
       </property>
      </widget>
     </item>
