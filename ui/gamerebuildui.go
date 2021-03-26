@@ -111,6 +111,10 @@ func (u *GameRebuildUI) onScan(bool) {
 	u.form.LstClean.Clear()
 	u.form.LstCleanMedia.Clear()
 	u.form.LstCleanRom.Clear()
+	u.addXmlMap = make(map[string]string)
+	u.eraseMediaList = nil
+	u.eraseRomList = nil
+	u.eraseXmlList = nil
 	if u.form.CbCleanXml.CheckState() == core.Qt__Checked {
 		u.scanCleanXML()
 	}
