@@ -68,6 +68,9 @@ func (u *GameListUI) onRebuildGameList(bool) {
 }
 
 func (u *GameListUI) onGameMod(bool) {
+	if u.form.LstGame.CurrentRow() < 0 {
+		return
+	}
 	old, _ := u.glp.Get(u.form.LstGame.CurrentItem().Text())
 	editor := NewGameditUI(fmt.Sprintf("修改 - %s", old.Name), u, UI_GeModeModify, old)
 	rs := editor.Exec()
@@ -113,6 +116,9 @@ func (u *GameListUI) onGameCreate(bool) {
 }
 
 func (u *GameListUI) onGameDelete(bool) {
+	if u.form.LstGame.CurrentRow() < 0 {
+		return
+	}
 	name := u.form.LePath.Text()
 	u.glp.Remove(name)
 	u.form.LstGame.TakeItem(u.form.LstGame.CurrentIndex().Row())
@@ -160,6 +166,8 @@ func (u *GameListUI) loadImage(img string) {
 		qp := gui.NewQPixmap3(fs.MergePath(u.gameloc, img), "", 0)
 		qp = qp.Scaled2(200, 200, core.Qt__KeepAspectRatio, core.Qt__FastTransformation)
 		u.form.PicImage.SetPixmap(qp)
+	} else {
+		u.form.PicImage.Clear()
 	}
 }
 
@@ -170,5 +178,7 @@ func (u *GameListUI) loadMarquee(img string) {
 		qp = qp.Scaled2(200, 200, core.Qt__KeepAspectRatio, core.Qt__FastTransformation)
 		u.form.PicMarquee.SetBaseSize2(100, 100)
 		u.form.PicMarquee.SetPixmap(qp)
+	} else {
+		u.form.PicMarquee.Clear()
 	}
 }
