@@ -121,7 +121,7 @@ func (g *GameListParser) Save() error {
 		g.gl.Games = append(g.gl.Games, *item)
 
 	}
-	data, err := xml.MarshalIndent(&g.gl, " ", "  ")
+	data, err := xml.MarshalIndent(&g.gl, "", "  ")
 	if err != nil {
 		return err
 	}
