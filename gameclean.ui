@@ -200,7 +200,7 @@
         <string>图片/视频清理项</string>
        </property>
        <property name="checked">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
        <property name="tristate">
         <bool>false</bool>
