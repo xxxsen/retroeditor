@@ -137,7 +137,7 @@ func (u *GameRebuildUI) scanCleanRom() {
 		filters[ext] = true
 	}
 	if len(filters) == 0 {
-		NoticeMessagef("未找到rom扩展名信息, 跳过rom清理扫描\n")
+		NoticeMessagef("未找到rom扩展名信息, 跳过rom清理扫描")
 		return
 	}
 
@@ -169,7 +169,7 @@ func (u *GameRebuildUI) scanCleanMedia() {
 		filters[ext] = true
 	}
 	if len(filters) == 0 {
-		NoticeMessagef("未找到图片/视频扩展名信息, 跳过媒体清理扫描\n")
+		NoticeMessagef("未找到图片/视频扩展名信息, 跳过媒体清理扫描")
 		return
 	}
 
@@ -213,7 +213,7 @@ func (u *GameRebuildUI) scanAddXML() {
 		filters[ext] = true
 	}
 	if len(filters) == 0 {
-		NoticeMessagef("未找到rom扩展名信息, 跳过rom扫描\n")
+		NoticeMessagef("未找到rom扩展名信息, 跳过rom扫描")
 		return
 	}
 

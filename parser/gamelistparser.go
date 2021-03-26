@@ -67,7 +67,7 @@ func (g *GameListParser) Parse() error {
 		fmtPath := "./" + strings.Join(fs.SplitPath(item.Path), "/")
 		if fmtPath != item.Path {
 			//暂时只打印日志, 后续再看要不要用格式化后的路径
-			log.Printf("Path may invalid, old:%s, fmt:%s\n", item.Path, fmtPath)
+			log.Printf("Path may invalid, old:%s, fmt:%s", item.Path, fmtPath)
 		}
 		g.store[item.Path] = item
 	}

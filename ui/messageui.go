@@ -27,5 +27,5 @@ func NoticeMessage(msg string) {
 func NoticeMessagef(fmtx string, args ...interface{}) {
 	msg := fmt.Sprintf(fmtx, args...)
 	NoticeMessage(msg)
-	log.Printf("%s\n", msg)
+	log.Printf("%s", msg)
 }
