@@ -57,11 +57,17 @@
          <property name="enabled">
           <bool>true</bool>
          </property>
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
        <item row="11" column="3">
         <widget class="QLineEdit" name="lePlayer">
          <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="readOnly">
           <bool>true</bool>
          </property>
         </widget>
@@ -99,11 +105,17 @@
          <property name="enabled">
           <bool>true</bool>
          </property>
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
        <item row="8" column="3">
         <widget class="QLineEdit" name="leDev">
          <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="readOnly">
           <bool>true</bool>
          </property>
         </widget>
@@ -141,11 +153,17 @@
          <property name="enabled">
           <bool>true</bool>
          </property>
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
        <item row="3" column="3">
         <widget class="QLineEdit" name="lePlayCnt">
          <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="readOnly">
           <bool>true</bool>
          </property>
         </widget>
@@ -176,11 +194,17 @@
          <property name="enabled">
           <bool>true</bool>
          </property>
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
        <item row="7" column="3">
         <widget class="QLineEdit" name="leReleaseDate">
          <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="readOnly">
           <bool>true</bool>
          </property>
         </widget>
@@ -197,11 +221,17 @@
          <property name="enabled">
           <bool>true</bool>
          </property>
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
        <item row="10" column="3">
         <widget class="QLineEdit" name="leGenre">
          <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="readOnly">
           <bool>true</bool>
          </property>
         </widget>
@@ -211,11 +241,17 @@
          <property name="enabled">
           <bool>true</bool>
          </property>
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
        <item row="0" column="3">
         <widget class="QLineEdit" name="lePath">
          <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="readOnly">
           <bool>true</bool>
          </property>
         </widget>
