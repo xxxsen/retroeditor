@@ -43,6 +43,7 @@ func (u *GameRebuildUI) init() {
 	desktop := widgets.QApplication_Desktop()
 	u.Move2((desktop.Width()-u.Width())/2, (desktop.Height()-u.Height())/2)
 
+	u.form.BtnExec.SetEnabled(false)
 	u.form.BtnCancel.ConnectClicked(func(bool) { u.Close() })
 	u.form.BtnScan.ConnectClicked(u.onScan)
 	u.form.BtnExec.ConnectClicked(u.onExec)
@@ -103,8 +104,13 @@ func (u *GameRebuildUI) buildSupportExt() {
 }
 
 func (u *GameRebuildUI) onScan(bool) {
+	defer u.form.BtnExec.SetEnabled(true)
 	u.form.BtnScan.SetEnabled(false)
 	defer u.form.BtnScan.SetEnabled(true)
+	u.form.LstAdd.Clear()
+	u.form.LstClean.Clear()
+	u.form.LstCleanMedia.Clear()
+	u.form.LstCleanRom.Clear()
 	if u.form.CbCleanXml.CheckState() == core.Qt__Checked {
 		u.scanCleanXML()
 	}
@@ -254,6 +260,8 @@ func (u *GameRebuildUI) scanCleanXML() {
 }
 
 func (u *GameRebuildUI) onExec(bool) {
+	defer u.form.BtnExec.SetEnabled(false)
+
 	wouldUpdate := false
 	if u.form.CbCleanXml.CheckState() == core.Qt__Checked {
 		wouldUpdate = true
