@@ -59,7 +59,12 @@ func (u *GameListUI) init() {
 }
 
 func (u *GameListUI) onWriteToFile(bool) {
-	u.glp.Save()
+	err := u.glp.Save()
+	if err != nil {
+		NoticeMessagef("数据写入失败, 错误:%v", err)
+		return
+	}
+	NoticeMessagef("数据写入成功!")
 }
 
 func (u *GameListUI) onRebuildGameList(bool) {
