@@ -113,7 +113,7 @@ func (this *UIGamecleanDialog) SetupUI(Dialog *widgets.QDialog) {
 	this.GridLayout4.AddWidget3(this.LstCleanMedia, 1, 0, 1, 1, 0)
 	this.CbCleanMedia = widgets.NewQCheckBox(Dialog)
 	this.CbCleanMedia.SetObjectName("CbCleanMedia")
-	this.CbCleanMedia.SetChecked(true)
+	this.CbCleanMedia.SetChecked(false)
 	this.CbCleanMedia.SetTristate(false)
 	this.GridLayout4.AddWidget3(this.CbCleanMedia, 0, 0, 1, 1, 0)
 	this.GridLayout3.AddLayout2(this.GridLayout4, 1, 3, 1, 2, 0)
