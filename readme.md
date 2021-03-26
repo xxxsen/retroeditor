@@ -37,3 +37,8 @@ ${bin} --root=${你的roms目录}
 ### 编译
 
 进入到源码目录后, 运行 `go build -o retroeditor` 即可
+
+
+## TODO
+
+- [ ] 视频预览支持
