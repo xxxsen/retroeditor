@@ -111,7 +111,10 @@ func (g *GameListParser) Save() error {
 	//save old
 	err := os.Rename(g.file, g.file+".bak")
 	if err != nil {
-		return err
+		//不存在的情况下继续写
+		if !os.IsNotExist(err) {
+			return err
+		}
 	}
 	g.gl.Games = nil
 	for _, item := range g.store {
