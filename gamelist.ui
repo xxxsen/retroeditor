@@ -350,6 +350,26 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>lePath</tabstop>
+  <tabstop>leName</tabstop>
+  <tabstop>lePlayCnt</tabstop>
+  <tabstop>leLastPlay</tabstop>
+  <tabstop>leLang</tabstop>
+  <tabstop>leRate</tabstop>
+  <tabstop>leReleaseDate</tabstop>
+  <tabstop>leDev</tabstop>
+  <tabstop>lePub</tabstop>
+  <tabstop>leGenre</tabstop>
+  <tabstop>lePlayer</tabstop>
+  <tabstop>leDesc</tabstop>
+  <tabstop>btnRebuild</tabstop>
+  <tabstop>btnDelete</tabstop>
+  <tabstop>btnCreate</tabstop>
+  <tabstop>btnMod</tabstop>
+  <tabstop>btnWriteFile</tabstop>
+  <tabstop>lstGame</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

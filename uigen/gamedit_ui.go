@@ -171,6 +171,19 @@ func (this *UIGameditDialog) SetupUI(Dialog *widgets.QDialog) {
 
     this.RetranslateUi(Dialog)
 
+	Dialog.SetTabOrder(this.LePath, this.LeName)
+	Dialog.SetTabOrder(this.LeName, this.LePlayCnt)
+	Dialog.SetTabOrder(this.LePlayCnt, this.LeLastPlay)
+	Dialog.SetTabOrder(this.LeLastPlay, this.LeLang)
+	Dialog.SetTabOrder(this.LeLang, this.LeRate)
+	Dialog.SetTabOrder(this.LeRate, this.LeReleaseDate)
+	Dialog.SetTabOrder(this.LeReleaseDate, this.LeDev)
+	Dialog.SetTabOrder(this.LeDev, this.LePub)
+	Dialog.SetTabOrder(this.LePub, this.LeGenre)
+	Dialog.SetTabOrder(this.LeGenre, this.LePlayer)
+	Dialog.SetTabOrder(this.LePlayer, this.LeDesc)
+	Dialog.SetTabOrder(this.LeDesc, this.BtnSave)
+	Dialog.SetTabOrder(this.BtnSave, this.BtnCancel)
 }
 
 func (this *UIGameditDialog) RetranslateUi(Dialog *widgets.QDialog) {

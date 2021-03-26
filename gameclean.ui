@@ -287,6 +287,22 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>leRomExt</tabstop>
+  <tabstop>lePicExt</tabstop>
+  <tabstop>leVideoExt</tabstop>
+  <tabstop>cbCleanXml</tabstop>
+  <tabstop>cbAddXml</tabstop>
+  <tabstop>cbCleanMedia</tabstop>
+  <tabstop>cbCleanRom</tabstop>
+  <tabstop>btnCancel</tabstop>
+  <tabstop>btnScan</tabstop>
+  <tabstop>btnExec</tabstop>
+  <tabstop>LstClean</tabstop>
+  <tabstop>LstAdd</tabstop>
+  <tabstop>LstCleanMedia</tabstop>
+  <tabstop>LstCleanRom</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

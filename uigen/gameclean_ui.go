@@ -2,8 +2,8 @@
 package uigen
 
 import (
-	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/widgets"
+	"github.com/therecipe/qt/core"
 )
 
 type UIGamecleanDialog struct {
@@ -149,6 +149,19 @@ func (this *UIGamecleanDialog) SetupUI(Dialog *widgets.QDialog) {
 
     this.RetranslateUi(Dialog)
 
+	Dialog.SetTabOrder(this.LeRomExt, this.LePicExt)
+	Dialog.SetTabOrder(this.LePicExt, this.LeVideoExt)
+	Dialog.SetTabOrder(this.LeVideoExt, this.CbCleanXml)
+	Dialog.SetTabOrder(this.CbCleanXml, this.CbAddXml)
+	Dialog.SetTabOrder(this.CbAddXml, this.CbCleanMedia)
+	Dialog.SetTabOrder(this.CbCleanMedia, this.CbCleanRom)
+	Dialog.SetTabOrder(this.CbCleanRom, this.BtnCancel)
+	Dialog.SetTabOrder(this.BtnCancel, this.BtnScan)
+	Dialog.SetTabOrder(this.BtnScan, this.BtnExec)
+	Dialog.SetTabOrder(this.BtnExec, this.LstClean)
+	Dialog.SetTabOrder(this.LstClean, this.LstAdd)
+	Dialog.SetTabOrder(this.LstAdd, this.LstCleanMedia)
+	Dialog.SetTabOrder(this.LstCleanMedia, this.LstCleanRom)
 }
 
 func (this *UIGamecleanDialog) RetranslateUi(Dialog *widgets.QDialog) {

@@ -206,6 +206,23 @@ func (this *UIGamelistForm) SetupUI(Form *widgets.QWidget) {
 
     this.RetranslateUi(Form)
 
+	Form.SetTabOrder(this.LePath, this.LeName)
+	Form.SetTabOrder(this.LeName, this.LePlayCnt)
+	Form.SetTabOrder(this.LePlayCnt, this.LeLastPlay)
+	Form.SetTabOrder(this.LeLastPlay, this.LeLang)
+	Form.SetTabOrder(this.LeLang, this.LeRate)
+	Form.SetTabOrder(this.LeRate, this.LeReleaseDate)
+	Form.SetTabOrder(this.LeReleaseDate, this.LeDev)
+	Form.SetTabOrder(this.LeDev, this.LePub)
+	Form.SetTabOrder(this.LePub, this.LeGenre)
+	Form.SetTabOrder(this.LeGenre, this.LePlayer)
+	Form.SetTabOrder(this.LePlayer, this.LeDesc)
+	Form.SetTabOrder(this.LeDesc, this.BtnRebuild)
+	Form.SetTabOrder(this.BtnRebuild, this.BtnDelete)
+	Form.SetTabOrder(this.BtnDelete, this.BtnCreate)
+	Form.SetTabOrder(this.BtnCreate, this.BtnMod)
+	Form.SetTabOrder(this.BtnMod, this.BtnWriteFile)
+	Form.SetTabOrder(this.BtnWriteFile, this.LstGame)
 }
 
 func (this *UIGamelistForm) RetranslateUi(Form *widgets.QWidget) {
