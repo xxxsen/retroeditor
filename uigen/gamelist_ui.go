@@ -53,7 +53,7 @@ type UIGamelistForm struct {
 func (this *UIGamelistForm) SetupUI(Form *widgets.QWidget) {
 	Form.SetObjectName("Form")
 	Form.SetGeometry(core.NewQRect4(0, 0, 1280, 720))
-	Form.SetMinimumSize(core.NewQSize2(1280, 720))
+	Form.SetMinimumSize(core.NewQSize2(960, 540))
 	this.VerticalLayout = widgets.NewQVBoxLayout2(Form)
 	this.VerticalLayout.SetObjectName("verticalLayout")
 	this.VerticalLayout.SetContentsMargins(0, 0, 0, 0)

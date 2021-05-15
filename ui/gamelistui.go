@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"log"
 	"path/filepath"
 	"retroeditor/fs"
 	"retroeditor/parser"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/gui"
+	"github.com/therecipe/qt/multimedia"
 	"github.com/therecipe/qt/widgets"
 )
 
@@ -20,10 +22,19 @@ type GameListUI struct {
 	//
 	gameloc string
 	glp     *parser.GameListParser
+	player  *multimedia.QMediaPlayer
+	view    *multimedia.QVideoWidget
 }
 
 func NewGameListUI(gameloc string) *GameListUI {
-	u := &GameListUI{gameloc: gameloc, QWidget: widgets.NewQWidget(nil, 0), glp: parser.NewGameListParser(gameloc + "/" + "gamelist.xml")}
+	u := &GameListUI{
+		gameloc: gameloc,
+		QWidget: widgets.NewQWidget(nil, 0),
+		glp:     parser.NewGameListParser(gameloc + "/" + "gamelist.xml"),
+		player:  multimedia.NewQMediaPlayer(nil, 0),
+		view:    multimedia.NewQVideoWidget(nil),
+	}
+	u.player.SetVideoOutput(u.view)
 	u.form = &uigen.UIGamelistForm{}
 	u.form.SetupUI(u.QWidget)
 	u.SetWindowTitle(fmt.Sprintf("GameListEditor - %s", filepath.Base(u.gameloc)))
@@ -49,6 +60,10 @@ func (u *GameListUI) init() {
 	if u.form.LstGame.Count() > 0 {
 		u.form.LstGame.SetCurrentRow(0)
 	}
+
+	u.player.ConnectError2(func(err multimedia.QMediaPlayer__Error) {
+		log.Printf("Recv video play errmsg:%v", err)
+	})
 
 	//设置按钮回调
 	u.form.BtnDelete.ConnectClicked(u.onGameDelete)
@@ -162,7 +177,13 @@ func (u *GameListUI) onDataNotify(m *parser.GameListItem) {
 }
 
 func (u *GameListUI) loadVideo(video string) {
-	//TODO:
+	u.player.Stop()
+	if len(video) == 0 {
+		return
+	}
+
+	u.player.SetMedia(multimedia.NewQMediaContent2(core.QUrl_FromLocalFile(video)), nil)
+	u.player.Play()
 }
 
 func (u *GameListUI) loadImage(img string) {
